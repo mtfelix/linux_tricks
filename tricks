@@ -1,0 +1,77 @@
+linux命令行操作使用小技巧
+
+2014年9月16日
+14:27
+
+cat a b | sort | uniq > c   # c is a union b 并集
+cat a b | sort | uniq -d > c   # c is a intersect b 交集
+cat a b b | sort | uniq -u > c   # c is set difference a - b 差集
+
+源文档 <http://coolshell.cn/articles/8883.html> 
+
+
+
+
+在文件末尾增加一个^en：
+cat 1k.de.keywords | awk '{print $0"^en"}' 
+
+
+对目录下所有文件，取前1k行，然后输出到以原文件前2个字符为中缀的名称的文件中。如   
+"ptwikidata.words"-> "1k.pt.words"：
+for line in `ls|grep words` ; do head -1000 $line >1k.${line:0:2}.words; done
+
+  
+利用python对一个文件进行shuffle：
+python -c "import random, sys; lines = open(sys.argv[1]).readlines(); random.shuffle(lines); print ''.join(lines),"  infile > infile.shuffled
+
+
+check多语语种识别结果
+cat test.out | awk -F '^' '{if($6!="pt" && $2=="pt")print $0}' | wc -l
+
+
+查看两个文件的diff行数：
+grep -F -v -f a.txt b.txt | sort | uniq | wc -l
+差集：(b-a) 
+
+
+查看进程：
+ps -aux  | grep "searcher"
+
+查看端口号被占用：
+ netstat -tlnp | grep 21811
+
+kill掉所有相关进程
+ps xfr   | gawk  '{ print $1}'  | xargs kill -9  
+【解释】xargs的意思就是把前面的输出一行一行作为后面命令的输入参数，并且执行后面这个命令
+
+linux如何快速输入从前历史命令：
+Ctrl+r
+
+链接库地址的export
+Export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:new_add_dir
+
+对目录下文件统一增加一个后缀（如.unix）
+ls | xargs -I{} cp {} {}.unix
+
+批量文件后缀修改：将“.wfreq.3up”改为“.wfreq”
+rename .wfreq.3up .wfreq *.wfreq.3up
+
+
+查看文件16进制编码
+hexdump -C ar_test.txt
+
+window和unix格式转换（文件名不变）
+Dos2unix  file
+
+
+查看磁盘读写的负荷
+iostat -d sdh1 -k -x 1 5
+
+拷贝目录，忽略目录下某些文件：
+------------------------------------------------
+rsync 本来是文件同步备份的工具，相对于普通的 cp 命令，rsync 在控制方面就强多了，而且 rsync 对遍历目录也支持，有 --exclude 参数可以忽略指定的文件或文件夹。
+rsync -vaP --exclude=”.*” --exclude=”Makefile” dir1 /home/dir2
+
+源文档 <http://zohead.com/archives/linux-copy-directory-ignore-files/> 
+
+
